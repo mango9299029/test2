@@ -1,0 +1,64 @@
+import math
+
+def calculate(expression):
+    """
+    Calculates a mathematical expression, including scientific functions.
+    """
+    # Sanitize and replace special characters/functions with Python-compatible ones
+    # For example, replace '√' with 'sqrt'
+    sanitized_expression = expression.replace('×', '*')
+    sanitized_expression = sanitized_expression.replace('÷', '/')
+    sanitized_expression = sanitized_expression.replace('−', '-')
+    sanitized_expression = sanitized_expression.replace('√', 'sqrt')
+    sanitized_expression = sanitized_expression.replace('π', 'pi')
+    
+    # Pre-process scientific functions to be usable with Python's math library
+    sanitized_expression = sanitized_expression.replace('sin(', 'math.sin(')
+    sanitized_expression = sanitized_expression.replace('cos(', 'math.cos(')
+    sanitized_expression = sanitized_expression.replace('tan(', 'math.tan(')
+    sanitized_expression = sanitized_expression.replace('log(', 'math.log10(')
+    sanitized_expression = sanitized_expression.replace('ln(', 'math.log(')
+    sanitized_expression = sanitized_expression.replace('sqrt(', 'math.sqrt(')
+    sanitized_expression = sanitized_expression.replace('pi', 'math.pi')
+
+    # Add powers like x^2, x^3
+    sanitized_expression = sanitized_expression.replace('^', '**')
+
+    # Use a dictionary to define allowed globals to prevent malicious code injection
+    # This is a safer alternative to a full `eval()`
+    allowed_globals = {
+        "__builtins__": None,
+        "math": math,
+        "pi": math.pi,
+        "sin": math.sin,
+        "cos": math.cos,
+        "tan": math.tan,
+        "log": math.log,
+        "log10": math.log10,
+        "sqrt": math.sqrt
+    }
+
+    try:
+        # Use eval with restricted globals to execute the expression
+        result = eval(sanitized_expression, allowed_globals)
+        return str(result)
+    except Exception as e:
+        return f"Error: {e}"
+
+def main():
+    print("เครื่องคิดเลขวิทยาศาสตร์ (Python)")
+    print("ป้อนสูตรคณิตศาสตร์ หรือ 'exit' เพื่อออกจากโปรแกรม")
+    print("ตัวอย่าง: sin(pi/2), 2^3, 10 + 5 * 2, sqrt(25), log(100)")
+    
+    while True:
+        user_input = input("ป้อนสูตร: ")
+        
+        if user_input.lower() == 'exit':
+            print("ออกจากโปรแกรม")
+            break
+        
+        result = calculate(user_input)
+        print("ผลลัพธ์:", result)
+
+if __name__ == "__main__":
+    main()
